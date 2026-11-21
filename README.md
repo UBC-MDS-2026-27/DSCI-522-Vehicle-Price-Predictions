@@ -95,7 +95,7 @@ Use `uv run` to execute commands in the project environment; manual activation i
 
 ## Licenses
 
-Licensing documentation is under review in PR #16. The proposed licenses are MIT for the software code and Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) for the report. This section will be updated to match the approved `LICENSE.md`.
+The software code is licensed under the MIT License. The analysis report is licensed under Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0). See [LICENSE.md](LICENSE.md) for the project’s licensing documentation. The proposed licenses are MIT for the software code and Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) for the report. This section will be updated to match the approved `LICENSE.md`.
 
 The Vehicle Sales Data dataset is listed on [Kaggle](https://www.kaggle.com/datasets/syedanwarafridi/vehicle-sales-data) under the MIT License. Its licensing is separate from the licenses applied to this project's code and report.
 
