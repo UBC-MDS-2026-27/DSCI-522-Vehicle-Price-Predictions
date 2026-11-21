@@ -74,7 +74,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="vehicle-price-prediction_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="vehicle-price-prediction_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="vehicle-price-prediction_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="vehicle-price-prediction_files/libs/bootstrap/bootstrap-917079515d91bccb85b543faf8aa8bb6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="vehicle-price-prediction_files/libs/bootstrap/bootstrap-215b371544c282197b31c8aa00ce3677.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
 
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
@@ -107,14 +107,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<p>Jerry John Doviavu, Vaibhav Sharma, Ceilidh Torrance</p>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>We investigated whether manufacturing year and odometer reading could be used to build a regression model to predict the selling price of used vehicles sold at auction. Using a sample of 5,000 vehicle sales records, we developed a linear regression model and evaluated its predictive performance using mean absolute error (MAE) and the coefficient of determination (R²). The model achieved a test MAE of 5,319.82 USD and a test R² of approximately 0.4, while reducing cross-validation MAE by 26.3% compared to a median price baseline. These findings suggest that manufacturing year and odometer readings provide useful information about auction prices, although they do not explain all of the variation in vehicle selling prices. Future work could investigate additional predictors to improve accuracy.</p>
+</section>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>This analysis investigates how well vehicle year and odometer readings predict selling prices using the Vehicle Sales Data dataset obtained from Kaggle. A reproducible sample of 5,000 records was divided into 80% training data and 20% test data. Linear regression was compared with a median-price baseline using five-fold cross-validation on the training set, followed by evaluation on the held-out test set.</p>
-<p>Data source: <a href="https://www.kaggle.com/datasets/syedanwarafridi/vehicle-sales-data">Vehicle Sales Data</a>.</p>
+<p>Used car pricing is much more variable than that of a standard product as feature variation and vehicle depreciation over time both play a role in pricing (Caglayan Akay, E., Bolukbasi, Ö. F., &amp; Bekar, E., 2018). This is why two car models that appear similar may have significantly different prices that depend on factors such as manufacturing year, mileage, make, and model. Dealerships need to be able to price cars competitively to compete in the current market, without sacrificing profits. To bid on and resell a car competitively, a dealership needs an understanding of what features are driving auction prices, what options are competitive, and what buyers are willing to pay.</p>
+<p>Here we ask how accurately machine learning can predict the auction price of a used car using manufacturing year and mileage. By answering this question, we can support dealerships in making informed decisions related to bidding on cars in wholesale auctions which are a large, important source of dealer inventory (Larsen, 2021). It can be reasoned that dealerships that consistently overbid on cars are at risk of losing profits that could keep them afloat, while dealerships that consistently underbid can fail to acquire inventory and risk losing business. Informed bidding that reflects trends and remains competitive in the current market can potentially increase turnover and profitability, and information availability has been shown to shape bidding behavior and outcomes in wholesale auto auctions (Tadelis &amp; Zettelmeyer, 2015).</p>
+<p>To answer this question we use the dataset <em>Vehicle Sales Data</em> (Anwar, n.d.), a dataset of wholesale used vehicles sales sold at auction, including a Manheim Market Report (MMR) benchmark value. A 5,000 row sample from this dataset will be used for training and testing in order to reduce computational overhead during the analysis. Each example in the training and testing set represents one recorded vehicle sale with its associated features such as manufacturing year and odometer reading, as well as the selling price. The target we want to predict is the selling price of the car measured in US dollars (USD).</p>
 </section>
-<section id="data-preparation" class="level2">
-<h2 class="anchored" data-anchor-id="data-preparation">Data preparation</h2>
-<div id="e8bf3491" class="cell" data-execution_count="1">
+<section id="methods" class="level2">
+<h2 class="anchored" data-anchor-id="methods">Methods</h2>
+<section id="data" class="level3">
+<h3 class="anchored" data-anchor-id="data">Data</h3>
+<p>The dataset used for this project is the <em>Vehicle Sales Data</em> created by Syed Anwar (Anwar, n.d.) and sourced from Kaggle. Each row in the dataset represents a used car that was sold and describes the car by fifteen features: manufacturing year, make, model, trim, body, transmission, vehicle identification number (VIN), state, condition, odometer reading, exterior color, interior color, seller, Manheim Market Report, and sales date. An additional target column representing the selling price of the car is also included.</p>
+<p>The data is downloaded and loaded with the code below.</p>
+<div id="748ed947" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -126,9 +136,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>raw_dir <span class="op">=</span> project_root <span class="op">/</span> <span class="st">"data"</span> <span class="op">/</span> <span class="st">"raw"</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>processed_dir <span class="op">=</span> project_root <span class="op">/</span> <span class="st">"data"</span> <span class="op">/</span> <span class="st">"processed"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<section id="download-the-original-data" class="level3">
-<h3 class="anchored" data-anchor-id="download-the-original-data">Download the original data</h3>
-<div id="fa278857" class="cell" data-execution_count="2">
+<section id="download-the-original-data" class="level4">
+<h4 class="anchored" data-anchor-id="download-the-original-data">Download the original data</h4>
+<div id="ae95fab8" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> kagglehub</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>raw_dir.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
@@ -146,13 +156,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Using existing file:"</span>, raw_file)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Using existing file: /Users/vaibhavsharma/Downloads/Block 3/522/milestone/DSCI-522-Group-17-Repository/data/raw/car_prices.csv</code></pre>
+<pre><code>Using existing file: C:\MDSV-V Projects\Block 3\522 - Workflows\DSCI-522-Group-17-Repository\data\raw\car_prices.csv</code></pre>
 </div>
 </div>
 </section>
-<section id="load-the-data" class="level3">
-<h3 class="anchored" data-anchor-id="load-the-data">Load the data</h3>
-<div id="3498b20b" class="cell" data-execution_count="3">
+</section>
+<section id="modeling-decisions" class="level3">
+<h3 class="anchored" data-anchor-id="modeling-decisions">Modeling Decisions</h3>
+<p>A linear regression model was built to evaluate whether a model could be used to predict the selling price of a used car. Linear regression provides a straightforward, interpretable starting model which can be used to predict selling price as well as understand which features are adding to or detracting from the price. We chose linear regression for its interpretability, while acknowledging that vehicle characteristics may not relate linearly to selling price.</p>
+<p>In order to reduce computational overhead while analyzing the data and building a model, some additional reduction was done on the data. First, a sample of 5,000 rows was made. This was a practical choice to keep the initial milestone analysis manageable and quick to rerun during development and review. A sampling seed of 522 was set for repeatability, then an 80-20 testing and training split was made to produce 4,000 training examples and 1,000 testing examples.</p>
+<p>Initial modeling was also simplified by selecting just two of the features to represent the examples: manufacturing year and odometer. These two numeric features were selected as they capture the age and wear of the car and can both plausibly relate to resale price. Both features are being treated as numeric as the magnitude of their values are related to selling price as older cars or cars with higher mileage tend to have lower selling prices. We did not establish that these are the best predictors or that additional predictors could not have made a more accurate or robust model. Make, model, condition, and other features may provide additional information useful for predicting selling price and could be explored further in a future study.</p>
+<section id="load-the-data" class="level4">
+<h4 class="anchored" data-anchor-id="load-the-data">Load the data</h4>
+<div id="b9f42a48" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>raw_file <span class="op">=</span> raw_dir <span class="op">/</span> <span class="st">"car_prices.csv"</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>cars <span class="op">=</span> pd.read_csv(raw_file, low_memory<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -164,9 +180,9 @@ Column names: ['year', 'make', 'model', 'trim', 'body', 'transmission', 'vin', '
 </div>
 </div>
 </section>
-<section id="select-a-reproducible-sample" class="level3">
-<h3 class="anchored" data-anchor-id="select-a-reproducible-sample">Select a reproducible sample</h3>
-<div id="f112dbc5" class="cell" data-execution_count="4">
+<section id="select-a-reproducible-sample" class="level4">
+<h4 class="anchored" data-anchor-id="select-a-reproducible-sample">Select a reproducible sample</h4>
+<div id="0ccf460f" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>cars_sample <span class="op">=</span> cars.sample(n<span class="op">=</span><span class="dv">5000</span>, random_state<span class="op">=</span><span class="dv">522</span>).copy()</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Sample rows and columns:"</span>, cars_sample.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -175,9 +191,13 @@ Column names: ['year', 'make', 'model', 'trim', 'body', 'transmission', 'vin', '
 </div>
 </div>
 </section>
-<section id="separate-training-and-test-data" class="level3">
-<h3 class="anchored" data-anchor-id="separate-training-and-test-data">Separate training and test data</h3>
-<div id="877fffe8" class="cell" data-execution_count="5">
+</section>
+<section id="exploratory-data-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="exploratory-data-analysis">Exploratory Data Analysis</h3>
+<p>As seen below, exploratory data analysis was performed to evaluate the available features, explore relationships, and find pre-processing requirements. As the original dataset does include some duplicate VINs, a check was done to ensure that there are no vehicles that appear in both the training and testing set. Upon inspection, it was noted that there were some null values in the features targeted for modeling, specifically, two null odometer readings in the training set. These null values were filled using median imputation as part of preprocessing. As seen in Figure 2 below, the odometer readings have large outliers so median imputation handles this when filling the values without adding additional complications.</p>
+<section id="separate-training-and-test-data" class="level4">
+<h4 class="anchored" data-anchor-id="separate-training-and-test-data">Separate training and test data</h4>
+<div id="0c3fe8fd" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(</span>
@@ -194,9 +214,9 @@ Test rows: 1000</code></pre>
 </div>
 </div>
 </section>
-<section id="check-for-vehicles-shared-between-sets" class="level3">
-<h3 class="anchored" data-anchor-id="check-for-vehicles-shared-between-sets">Check for vehicles shared between sets</h3>
-<div id="7d3da5f2" class="cell" data-execution_count="6">
+<section id="check-for-vehicles-shared-between-sets" class="level4">
+<h4 class="anchored" data-anchor-id="check-for-vehicles-shared-between-sets">Check for vehicles shared between sets</h4>
+<div id="3994ac9c" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>train_vins <span class="op">=</span> <span class="bu">set</span>(train_df[<span class="st">"vin"</span>].dropna())</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>test_vins <span class="op">=</span> <span class="bu">set</span>(test_df[<span class="st">"vin"</span>].dropna())</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -208,9 +228,9 @@ Test rows: 1000</code></pre>
 </div>
 </div>
 </section>
-<section id="inspect-missing-data-in-the-training-columns" class="level3">
-<h3 class="anchored" data-anchor-id="inspect-missing-data-in-the-training-columns">Inspect missing data in the training columns</h3>
-<div id="94a0c36e" class="cell" data-execution_count="7">
+<section id="inspect-missing-data-in-the-training-columns" class="level4">
+<h4 class="anchored" data-anchor-id="inspect-missing-data-in-the-training-columns">Inspect missing data in the training columns</h4>
+<div id="2adbceb8" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>model_columns <span class="op">=</span> [<span class="st">"year"</span>, <span class="st">"odometer"</span>, <span class="st">"sellingprice"</span>]</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Training column types:"</span>)</span>
@@ -233,15 +253,16 @@ dtype: int64</code></pre>
 </div>
 </div>
 </section>
-<section id="summarise-the-training-values" class="level3">
-<h3 class="anchored" data-anchor-id="summarise-the-training-values">Summarise the training values</h3>
-<div id="e0ee1599" class="cell" data-execution_count="8">
+<section id="summarise-the-training-values" class="level4">
+<h4 class="anchored" data-anchor-id="summarise-the-training-values">Summarise the training values</h4>
+<div class="cell" data-tbl-cap="Table 1. Summary statistics of the numeric features in the training dataset (n = 4,000 vehicles). The odometer feature has two missing values." data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>train_df[model_columns].describe()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<caption>Table 1. Summary statistics of the numeric features in the training dataset (n = 4,000 vehicles). The odometer feature has two missing values.</caption>
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -306,10 +327,10 @@ dtype: int64</code></pre>
 </div>
 </div>
 </section>
-<section id="explore-the-training-data" class="level3">
-<h3 class="anchored" data-anchor-id="explore-the-training-data">Explore the training data</h3>
+<section id="explore-the-training-data" class="level4">
+<h4 class="anchored" data-anchor-id="explore-the-training-data">Explore the training data</h4>
 <p>The figures below use the training data only. The test set was not used for any exploration.</p>
-<div id="6d5d693b" class="cell" data-execution_count="9">
+<div id="bfc3f65e" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">4</span>))</span>
@@ -328,7 +349,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div id="cf654364" class="cell" data-execution_count="10">
+<div id="9d2325be" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>odometer_df <span class="op">=</span> train_df.dropna(subset<span class="op">=</span>[<span class="st">"odometer"</span>])</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows left out of this plot because odometer is missing:"</span>,</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>      <span class="bu">len</span>(train_df) <span class="op">-</span> <span class="bu">len</span>(odometer_df))</span>
@@ -352,7 +373,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div id="1b1a6b42" class="cell" data-execution_count="11">
+<div id="f2424e6d" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>years <span class="op">=</span> <span class="bu">sorted</span>(train_df[<span class="st">"year"</span>].unique())</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>prices_by_year <span class="op">=</span> [train_df.loc[train_df[<span class="st">"year"</span>] <span class="op">==</span> y, <span class="st">"sellingprice"</span>] <span class="cf">for</span> y <span class="kw">in</span> years]</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -368,16 +389,16 @@ dtype: int64</code></pre>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="vehicle-price-prediction_files/figure-html/cell-12-output-1.png" width="953" height="424" class="figure-img"></p>
-<figcaption>Figure 3. Selling price by model year in the training data (n = 4,000). Each box covers the middle 50% of prices for that year, the orange line is the median, and the dots are outliers. Median price generally rises with model year, from under 1,500 USD for every year from 1991 to 2000 to about 21,500 USD for 2015, and prices vary much more for newer cars. Years before 2000 have very few cars (77 in total), and 2015 has only 63, so those boxes rest on little data.</figcaption>
+<figcaption>Figure 3. Selling price by manufacturing year in the training data (n = 4,000). Each box covers the middle 50% of prices for that year, the orange line is the median, and the dots are outliers. Median price generally rises with model year, from under 1,500 USD for every year from 1991 to 2000 to about 21,500 USD for 2015, and prices vary much more for newer cars. Years before 2000 have very few cars (77 in total), and 2015 has only 63, so those boxes rest on little data.</figcaption>
 </figure>
 </div>
 </div>
 </div>
 <p>Selling prices are right-skewed (Figure 1). Price falls quickly as the odometer reading rises and then levels off, so the relationship is curved (Figure 2). Median price generally rises with model year and varies much more for newer cars (Figure 3). Fifteen training cars have an odometer reading below 100 miles, which looks unusual for used cars. The curved pattern suggests that a straight-line model will not fit these data perfectly.</p>
 </section>
-<section id="define-predictors-and-target" class="level3">
-<h3 class="anchored" data-anchor-id="define-predictors-and-target">Define predictors and target</h3>
-<div id="dee5c98c" class="cell" data-execution_count="12">
+<section id="define-predictors-and-target" class="level4">
+<h4 class="anchored" data-anchor-id="define-predictors-and-target">Define predictors and target</h4>
+<div id="c662141d" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>features <span class="op">=</span> [<span class="st">"year"</span>, <span class="st">"odometer"</span>]</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>target <span class="op">=</span> <span class="st">"sellingprice"</span></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -393,9 +414,9 @@ Training target shape: (4000,)</code></pre>
 </div>
 </div>
 </section>
-<section id="save-the-prepared-data-splits" class="level3">
-<h3 class="anchored" data-anchor-id="save-the-prepared-data-splits">Save the prepared data splits</h3>
-<div id="74cf2b2c" class="cell" data-execution_count="13">
+<section id="save-the-prepared-data-splits" class="level4">
+<h4 class="anchored" data-anchor-id="save-the-prepared-data-splits">Save the prepared data splits</h4>
+<div id="b432c638" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>train_df.to_csv(processed_dir <span class="op">/</span> <span class="st">"train.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>test_df.to_csv(processed_dir <span class="op">/</span> <span class="st">"test.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -405,10 +426,9 @@ Training target shape: (4000,)</code></pre>
 </div>
 </div>
 </section>
-</section>
-<section id="set-up-the-regression-model" class="level2">
-<h2 class="anchored" data-anchor-id="set-up-the-regression-model">Set up the regression model</h2>
-<div id="0a58ff51" class="cell" data-execution_count="14">
+<section id="set-up-the-regression-model" class="level4">
+<h4 class="anchored" data-anchor-id="set-up-the-regression-model">Set up the regression model</h4>
+<div id="f2735e93" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.impute <span class="im">import</span> SimpleImputer</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
@@ -418,7 +438,7 @@ Training target shape: (4000,)</code></pre>
 <span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    LinearRegression()</span>
 <span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="aba3f6ed" class="cell" data-execution_count="15">
+<div id="b2e14f64" class="cell" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the imputer and regression model using the training data</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>linear_model.fit(X_train, y_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="15">
@@ -1669,10 +1689,10 @@ function copyFeatureNamesToClipboard(element) {
     if (!wasOpen) detailsElem.open = false;
     const rows = content.split('\n').map(row => `    "${row}"`);
     const formattedText = `[\n${rows.join(',\n')},\n]`;
-    const originalHTML = element.innerHTML.replace('✔', '');
+    const originalHTML = element.innerHTML.replace('âœ”', '');
     const originalStyle = element.style;
     const copyMark = document.createElement('span');
-    copyMark.innerHTML = '✔';
+    copyMark.innerHTML = 'âœ”';
     copyMark.style.color = 'blue';
     copyMark.style.fontSize = '1em';
 
@@ -1771,9 +1791,10 @@ function forceTheme(elementId) {
 forceTheme('sk-container-id-1');</script>
 </div>
 </div>
-<section id="evaluate-the-model-using-cross-validation" class="level3">
-<h3 class="anchored" data-anchor-id="evaluate-the-model-using-cross-validation">Evaluate the model using cross-validation</h3>
-<div id="674b7e08" class="cell" data-execution_count="16">
+</section>
+<section id="evaluate-the-model-using-cross-validation" class="level4">
+<h4 class="anchored" data-anchor-id="evaluate-the-model-using-cross-validation">Evaluate the model using cross-validation</h4>
+<div class="cell" data-tbl-cap="Table 2. Cross-validation performance of the regression model across five folds. MAE is reported in USD." data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_validate</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>cv_results <span class="op">=</span> cross_validate(</span>
@@ -1788,7 +1809,7 @@ forceTheme('sk-container-id-1');</script>
 <span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>cv_summary <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"MAE"</span>: <span class="op">-</span>cv_results[<span class="st">"test_mae"</span>],</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"MAE (USD)"</span>: <span class="op">-</span>cv_results[<span class="st">"test_mae"</span>],</span>
 <span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"R_squared"</span>: cv_results[<span class="st">"test_r2"</span>]</span>
 <span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a></span>
@@ -1801,10 +1822,11 @@ forceTheme('sk-container-id-1');</script>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<caption>Table 2. Cross-validation performance of the regression model across five folds. MAE is reported in USD.</caption>
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">MAE</th>
+<th data-quarto-table-cell-role="th">MAE (USD)</th>
 <th data-quarto-table-cell-role="th">R_squared</th>
 </tr>
 <tr class="even">
@@ -1846,9 +1868,9 @@ forceTheme('sk-container-id-1');</script>
 </div>
 </div>
 </section>
-<section id="summarise-cross-validation-performance" class="level3">
-<h3 class="anchored" data-anchor-id="summarise-cross-validation-performance">Summarise cross-validation performance</h3>
-<div id="f9a2fbc2" class="cell" data-execution_count="17">
+<section id="summarise-cross-validation-performance" class="level4">
+<h4 class="anchored" data-anchor-id="summarise-cross-validation-performance">Summarise cross-validation performance</h4>
+<div class="cell" data-tbl-cap="Table 3. Summary of cross-validation performance (mean and standard deviation across five folds)." data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>cv_summary_stats <span class="op">=</span> cv_summary.agg([<span class="st">"mean"</span>, <span class="st">"std"</span>]).<span class="bu">round</span>(<span class="dv">2</span>)</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>cv_summary_stats</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="17">
@@ -1856,10 +1878,11 @@ forceTheme('sk-container-id-1');</script>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<caption>Table 3. Summary of cross-validation performance (mean and standard deviation across five folds).</caption>
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">MAE</th>
+<th data-quarto-table-cell-role="th">MAE (USD)</th>
 <th data-quarto-table-cell-role="th">R_squared</th>
 </tr>
 </thead>
@@ -1881,13 +1904,15 @@ forceTheme('sk-container-id-1');</script>
 </div>
 </div>
 </section>
-<section id="interpretation" class="level3">
-<h3 class="anchored" data-anchor-id="interpretation">Interpretation</h3>
-<p>Using vehicle year and odometer readings, the linear regression model achieved a mean cross-validation MAE of approximately 5,230 and a mean R² of 0.415. These results indicate that the model captures some variation in selling prices, but substantial prediction error remains. Performance was relatively consistent across the five folds.</p>
 </section>
-<section id="compare-with-a-baseline-model" class="level3">
-<h3 class="anchored" data-anchor-id="compare-with-a-baseline-model">Compare with a baseline model</h3>
-<div id="dd71af28" class="cell" data-execution_count="18">
+<section id="analysis" class="level3">
+<h3 class="anchored" data-anchor-id="analysis">Analysis</h3>
+<p>Five-fold cross-validation was used to validate the model during model development and was evaluated on MAE and R² prior to a final model being built. No changes were made to the model after the initial cross-validation, but if needed it would have allowed us to evaluate and tune the hyperparameters.</p>
+<p>Using vehicle year and odometer readings, the linear regression model achieved a mean cross-validation MAE of approximately 5,230 USD and a mean R² of 0.415. These results indicate that the model captures some variation in selling prices, but substantial prediction error remains. Performance was relatively consistent across the five folds.</p>
+<p>The final model was evaluated on the held-out test set using MAE and R² evaluation metrics for direct comparison with the results of the cross-validation testing. MAE expresses average absolute prediction error in the same units as selling price which makes it easy to interpret for our purposes. R² tells us what percentage of the variation in used vehicle selling price the chosen features account for. To validate the output and understand model performance, we also compared against a median-price baseline using the same five cross validation folds. The median-price baseline was chosen as a simple benchmark to determine whether using manufacturing year and odometer reading improves predicted price.</p>
+<section id="compare-with-a-baseline-model" class="level4">
+<h4 class="anchored" data-anchor-id="compare-with-a-baseline-model">Compare with a baseline model</h4>
+<div class="cell" data-tbl-cap="Table 4. Comparison of mean cross-validation performance between the median baseline and the linear regression model. MAE is reported in USD." data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.dummy <span class="im">import</span> DummyRegressor</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>baseline_model <span class="op">=</span> DummyRegressor(strategy<span class="op">=</span><span class="st">"median"</span>)</span>
@@ -1905,9 +1930,9 @@ forceTheme('sk-container-id-1');</script>
 <span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>model_comparison <span class="op">=</span> pd.DataFrame({</span>
 <span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Model"</span>: [<span class="st">"Median baseline"</span>, <span class="st">"Linear regression"</span>],</span>
-<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Mean CV MAE"</span>: [</span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Mean CV MAE (USD)"</span>: [</span>
 <span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span>baseline_cv_results[<span class="st">"test_mae"</span>].mean(),</span>
-<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>        cv_summary[<span class="st">"MAE"</span>].mean()</span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>        cv_summary[<span class="st">"MAE (USD)"</span>].mean()</span>
 <span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>    ],</span>
 <span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Mean CV R_squared"</span>: [</span>
 <span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>        baseline_cv_results[<span class="st">"test_r2"</span>].mean(),</span>
@@ -1921,10 +1946,11 @@ forceTheme('sk-container-id-1');</script>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<caption>Table 4. Comparison of mean cross-validation performance between the median baseline and the linear regression model. MAE is reported in USD.</caption>
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Mean CV MAE</th>
+<th data-quarto-table-cell-role="th">Mean CV MAE (USD)</th>
 <th data-quarto-table-cell-role="th">Mean CV R_squared</th>
 </tr>
 <tr class="even">
@@ -1952,9 +1978,9 @@ forceTheme('sk-container-id-1');</script>
 </div>
 <p>The linear regression model outperformed the median baseline, reducing mean cross-validation MAE from 7,092.95 to 5,229.50, an improvement of approximately 26.3%. This suggests that vehicle year and odometer readings provide useful information for predicting selling prices, although substantial prediction error remains.</p>
 </section>
-<section id="evaluate-on-the-held-out-test-set" class="level3">
-<h3 class="anchored" data-anchor-id="evaluate-on-the-held-out-test-set">Evaluate on the held-out test set</h3>
-<div id="ac709113" class="cell" data-execution_count="19">
+<section id="evaluate-on-the-held-out-test-set" class="level4">
+<h4 class="anchored" data-anchor-id="evaluate-on-the-held-out-test-set">Evaluate on the held-out test set</h4>
+<div class="cell" data-tbl-cap="Table 5. Test set performance of the linear regression model (n = 999). One test observation with a missing selling price was excluded." data-execution_count="19">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> mean_absolute_error, r2_score</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify test rows with known selling prices</span></span>
@@ -1975,7 +2001,7 @@ forceTheme('sk-container-id-1');</script>
 <span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>test_predictions <span class="op">=</span> linear_model.predict(X_test)</span>
 <span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>test_results <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"MAE"</span>: [mean_absolute_error(y_test, test_predictions)],</span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"MAE (USD)"</span>: [mean_absolute_error(y_test, test_predictions)],</span>
 <span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"R_squared"</span>: [r2_score(y_test, test_predictions)]</span>
 <span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a>}, index<span class="op">=</span>[<span class="st">"Linear regression"</span>])</span>
 <span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a></span>
@@ -1989,10 +2015,11 @@ Test rows used for evaluation: 999</code></pre>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<caption>Table 5. Test set performance of the linear regression model (n = 999). One test observation with a missing selling price was excluded.</caption>
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">MAE</th>
+<th data-quarto-table-cell-role="th">MAE (USD)</th>
 <th data-quarto-table-cell-role="th">R_squared</th>
 </tr>
 </thead>
@@ -2010,13 +2037,14 @@ Test rows used for evaluation: 999</code></pre>
 </div>
 <p>Test observations with missing selling prices were excluded from evaluation because their prediction errors could not be calculated. Missing predictor values were replaced using medians learned from the training data.</p>
 </section>
-<section id="test-results-interpretation" class="level3">
-<h3 class="anchored" data-anchor-id="test-results-interpretation">Test results interpretation</h3>
-<p>The linear regression model achieved a held-out test MAE of 5,319.82 and an R² of approximately 0.40. These results were close to the cross-validation estimates, suggesting consistent predictive performance on held-out observations. Although vehicle year and odometer readings provide useful predictive information, substantial error remains. Evaluation was restricted to vehicles with recorded selling prices.</p>
 </section>
-<section id="compare-predicted-and-actual-selling-prices" class="level3">
-<h3 class="anchored" data-anchor-id="compare-predicted-and-actual-selling-prices">Compare predicted and actual selling prices</h3>
-<div id="1d6d1d79" class="cell" data-execution_count="20">
+</section>
+<section id="results" class="level2">
+<h2 class="anchored" data-anchor-id="results">Results</h2>
+<p>When the linear regression model was evaluated on the held-out test set it achieved an MAE of 5,319.82 and an R² of approximately 0.40. These results were close to the cross-validation estimates, suggesting consistent predictive performance on held-out observations. Although vehicle year and odometer readings provide useful predictive information, substantial error remains. Evaluation was restricted to vehicles with recorded selling prices.</p>
+<section id="compare-predicted-and-actual-selling-prices" class="level4">
+<h4 class="anchored" data-anchor-id="compare-predicted-and-actual-selling-prices">Compare predicted and actual selling prices</h4>
+<div id="200d620d" class="cell" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">5</span>))</span>
@@ -2039,17 +2067,18 @@ Test rows used for evaluation: 999</code></pre>
 <span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>    label<span class="op">=</span><span class="st">"Perfect predictions"</span></span>
 <span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Actual selling price"</span>)</span>
-<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Predicted selling price"</span>)</span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Actual selling price (USD)"</span>)</span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Predicted selling price (USD)"</span>)</span>
 <span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Predicted versus actual vehicle selling prices"</span>)</span>
 <span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
 <span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-28"><a href="#cb30-28" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
 <span id="cb30-29"><a href="#cb30-29" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="vehicle-price-prediction_files/figure-html/cell-21-output-1.png" width="664" height="470" class="figure-img"></p>
+<figcaption>Figure 4. Predicted versus actual vehicle selling prices in the test dataset. The red dashed line represents perfect predictions, where predicted prices equal actual prices. Points further from this line indicate larger prediction errors. The model tends to overestimate lower-priced vehicles and underestimate higher-priced vehicles, suggesting that predictions are concentrated within a narrower price range than the actual selling prices.</figcaption>
 </figure>
 </div>
 </div>
@@ -2059,14 +2088,29 @@ Test rows used for evaluation: 999</code></pre>
 <h3 class="anchored" data-anchor-id="prediction-plot-interpretation">Prediction plot interpretation</h3>
 <p>The model tends to overestimate some lower-priced vehicles and underestimate higher-priced vehicles. Predictions occupy a narrower range than actual selling prices, with particularly large errors for expensive vehicles. Some predictions are negative, which is unrealistic for selling prices. These patterns suggest that a linear model using only year and odometer readings does not adequately capture the full variation in vehicle prices.</p>
 </section>
-</section>
-<section id="limitations" class="level2">
-<h2 class="anchored" data-anchor-id="limitations">Limitations</h2>
+<section id="limitations" class="level3">
+<h3 class="anchored" data-anchor-id="limitations">Limitations</h3>
 <p>This analysis used a reproducible sample of 5,000 records and only two predictors: vehicle year and odometer readings. Other available characteristics, such as make, model, and condition, may provide additional predictive information. The linear model also assumes additive linear relationships and can produce unrealistic negative prices. Test evaluation excluded observations with missing selling prices, so the reported performance applies to vehicles with recorded prices.</p>
+</section>
+</section>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
+<p>Linear regression using vehicle manufacturing year and odometer readings achieved a test MAE of approximately 5,319.82 USD. This means that, on average, the models predicted selling prices are off by over 5,000 USD from the actual selling prices. Based on Figure 1 our distribution of selling prices is right skewed, with more than half of the cars in the sample sold for under 20,000 USD. Considering this, an MAE of over 5,300 USD is quite large. However, the median baseline had a mean MAE of about 7092.95 USD in CV testing so this is still an improvement.</p>
+<p>The test R² was approximately 0.40, meaning the model explains around 40% of the variation in selling prices in the test data. This is a good start but still does not account for about 60% of the variation in the selling prices. Adding additional features or using more flexible models, such as tree-based ensembles or neural networks, could help to close this gap, as previous studies of used car prices have found that these approaches outperform linear regression (Lin, 2025; Wei, 2026). Using a non-linear model is also supported by our exploratory data analysis which found a curved relationship between odometer readings and selling prices, which might account for some of the prediction error when using a linear model. Further, we can see that the results of the cross-validation performance was similar to the test performance. This suggests that the predictive validation estimates were reasonably consistent.</p>
+<p>The model improved on the median baseline, reducing cross validation MAE by approximately 26.3%. However, that does not mean that our model is useful in practice. What these tests ultimately show us is that while our model is better than the baseline, there are still improvements that could be made that would allow for more accurate, robust predictions.</p>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>Vehicle year and odometer readings provided useful information for predicting selling prices. Linear regression reduced cross-validation MAE by approximately 26.3% compared with a median baseline. On the held-out test set, the model achieved an MAE of 5,319.82 and an R² of approximately 0.40. However, substantial errors remained, particularly for higher-priced vehicles, limiting its usefulness for precise individual valuations.</p>
+<p>Vehicle manufacturing year and odometer readings provided useful information for predicting selling prices. Linear regression reduced cross-validation MAE by approximately 26.3% compared with a median baseline. On the held-out test set, the model achieved an MAE of 5,319.82 USD and an R² of approximately 0.40. However, substantial errors remained, particularly for higher-priced vehicles, limiting its usefulness for precise individual valuations.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Anwar, S. (n.d.). Vehicle sales data [Data set]. Kaggle. https://www.kaggle.com/datasets/syedanwarafridi/vehicle-sales-data</p>
+<p>Caglayan Akay, E., Bolukbasi, Ö. F., &amp; Bekar, E. (2018). Robust and resistant estimations of hedonic prices for second hand cars: An application to the Istanbul car market. International Journal of Economics and Financial Issues, 8(1), 39–47. https://econjournals.com/index.php/ijefi/article/view/5734</p>
+<p>Larsen, B. J. (2021). The efficiency of real-world bargaining: Evidence from wholesale used-auto auctions. The Review of Economic Studies, 88(2), 851-882. https://ideas.repec.org/a/oup/restud/v88y2021i2p851-882..html</p>
+<p>Lin, J. (2025). Predicting used car price based on machine learning. In <em>Proceedings of the 1st International Conference on E-commerce and Artificial Intelligence (ECAI 2024)</em> (pp.&nbsp;553-560). SCITEPRESS. https://doi.org/10.5220/0013270500004568</p>
+<p>Tadelis, S., &amp; Zettelmeyer, F. (2015). Information disclosure as a matching mechanism: Theory and evidence from a field experiment. American Economic Review, 105(2), 886-905. https://doi.org/10.1257/aer.20110753</p>
+<p>Wei, M. (2026). Used car price prediction based on machine learning algorithms. In L. C. Yoong (Ed.), <em>Proceedings of the 2026 2nd International Conference on Financial Innovation and Marketing Management (FIMM 2026)</em> (Advances in Economics, Business and Management Research, Vol. 408, pp.&nbsp;1348-1355). Atlantis Press. https://doi.org/10.2991/978-94-6239-801-6_140</p>
 </section>
 
 </main>
