@@ -101,14 +101,23 @@ The Vehicle Sales Data dataset is listed on [Kaggle](https://www.kaggle.com/data
 
 ## AI use statement
 
-Jerry used ChatGPT to assist with Python environment setup, Git and GitHub command explanations, analysis code, debugging, interpretation of model results, and drafting documentation and review feedback. Generated suggestions were checked through local execution and teammate review where applicable. Team members performed the GitHub issue, pull request, review, and merge actions themselves.
+### Vaibhav Sharma
+
+I used ChatGPT as a supporting tool during this project to help understand some concepts, debug errors, and get suggestions for improving my code. I reviewed the AI-generated suggestions, made changes where needed, and tested the code myself to make sure it worked correctly. The final implementation and decisions were made by me.
+
+### Jerry John Doviavu
+
+I used ChatGPT to assist with Python environment setup, Git and GitHub command explanations, analysis code, debugging, interpretation of model results, and drafting documentation and review feedback. Generated suggestions were checked through local execution and teammate review where applicable. Team members performed the GitHub issue, pull request, review, and merge actions themselves.
 
 Example requests included:
 
 - “Before fitting it, what are some other ways of replacing the missing values?”
 - “Check if we got it right”—asking ChatGPT to inspect the revised data-download code.
 - “Can we include the errors and the solutions in the review, in a way of suggestion?”—asking for help drafting actionable review feedback.
-Other team members should add their own AI-use disclosures, if applicable, before submission.
+
+### Ceilidh Torrance
+
+I used ChatGPT to draft and validate the report.
 
 ## References
 
