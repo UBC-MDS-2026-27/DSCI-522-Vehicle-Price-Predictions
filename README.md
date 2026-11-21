@@ -117,7 +117,11 @@ Example requests included:
 
 ### Ceilidh Torrance
 
-I used ChatGPT to draft and validate the report.
+I used ChatGPT to assist with outlining, editing, and validating the report. The actual writing was completed by me, and all pull requests were reviewed, approved, and merged by team members themselves. 
+
+Example requests include: 
+- "Could you provide the scaffolding for writing the summary."
+- "Can you please compare this section to the report outline and let me know what needs to be revisited and what points are missing."
 
 ## References
 
