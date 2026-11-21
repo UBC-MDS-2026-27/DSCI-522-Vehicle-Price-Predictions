@@ -103,12 +103,11 @@ The Vehicle Sales Data dataset is listed on [Kaggle](https://www.kaggle.com/data
 
 Jerry used ChatGPT to assist with Python environment setup, Git and GitHub command explanations, analysis code, debugging, interpretation of model results, and drafting documentation and review feedback. Generated suggestions were checked through local execution and teammate review where applicable. Team members performed the GitHub issue, pull request, review, and merge actions themselves.
 
-Example prompts included:
+Example requests included:
 
 - “Before fitting it, what are some other ways of replacing the missing values?”
-- “Is this not a case of data leakage?”
-- “There's going to be an oral check-in to explain the process and the code, so I understand what we are doing.”
-
+- “Check if we got it right”—asking ChatGPT to inspect the revised data-download code.
+- “Can we include the errors and the solutions in the review, in a way of suggestion?”—asking for help drafting actionable review feedback.
 Other team members should add their own AI-use disclosures, if applicable, before submission.
 
 ## References
