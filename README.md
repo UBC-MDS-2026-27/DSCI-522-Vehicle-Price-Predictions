@@ -4,7 +4,7 @@ Authors: Jerry John Doviavu, Vaibhav Sharma, and Ceilidh Torrance.
 
 ## Project summary
 
-How well can vehicle year and odometer readings predict selling prices? Using a reproducible sample of 5,000 records from the Vehicle Sales Data dataset, we compared linear regression with a baseline that predicts the median training price. Linear regression reduced mean cross-validation mean absolute error (MAE) by approximately 26.3%, from 7,092.95 to 5,229.50. On the held-out test set, MAE was 5,319.82 and R² was approximately 0.40.
+How well can vehicle year and odometer readings predict selling prices? Using a reproducible sample of 5,000 records from the Vehicle Sales Data dataset, we compared linear regression with a baseline that predicts the median training price. Linear regression reduced mean cross-validation mean absolute error (MAE) by approximately 26.3%, from 7,092.95 USD to 5,229.50 USD. On the held-out test set, MAE was 5,319.82 USD and R² was approximately 0.40.
 
 Vehicle year and odometer readings provide useful predictive information, but substantial errors remain. The model underestimates expensive vehicles and produces some unrealistic negative predictions, limiting its usefulness for precise individual valuations. Test performance was evaluated only for vehicles with recorded selling prices.
 
@@ -92,10 +92,14 @@ Use `uv run` to execute commands in the project environment; manual activation i
 | `uv.lock` | Resolved dependency versions |
 | `.python-version` | Python version request |
 | `CODE_OF_CONDUCT.md` | Community participation expectations |
+| `README.md` | Project overview and reproduction instructions |
+| `LICENSE.md` | Code and report licenses |
+| `CONTRIBUTING.md` | Contribution and review guidelines |
+| `.gitignore` | Patterns excluding local and temporary files from tracking |
 
 ## Licenses
 
-The software code is licensed under the MIT License. The analysis report is licensed under Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0). See [LICENSE.md](LICENSE.md) for the project’s licensing documentation. The proposed licenses are MIT for the software code and Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) for the report. This section will be updated to match the approved `LICENSE.md`.
+The software code is licensed under the MIT License. The analysis report is licensed under Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0). See [LICENSE.md](LICENSE.md) for the project’s licensing documentation.
 
 The Vehicle Sales Data dataset is listed on [Kaggle](https://www.kaggle.com/datasets/syedanwarafridi/vehicle-sales-data) under the MIT License. Its licensing is separate from the licenses applied to this project's code and report.
 
@@ -119,10 +123,11 @@ Example requests included:
 
 I used ChatGPT to assist with outlining, editing, and validating the report. The actual writing was completed by me, and all pull requests were reviewed, approved, and merged by team members themselves. 
 
-Example requests include: 
+Example requests include:
+
 - "Could you provide the scaffolding for writing the summary."
 - "Can you please compare this section to the report outline and let me know what needs to be revisited and what points are missing."
 
 ## References
 
-syedanwarafridi. (n.d.). *Vehicle Sales Data* [Dataset]. Kaggle. https://www.kaggle.com/datasets/syedanwarafridi/vehicle-sales-data. Accessed November 21, 2026.
+Anwar, S.(n.d.). *Vehicle Sales Data* [Dataset]. Kaggle. https://www.kaggle.com/datasets/syedanwarafridi/vehicle-sales-data. Accessed November 21, 2026.
