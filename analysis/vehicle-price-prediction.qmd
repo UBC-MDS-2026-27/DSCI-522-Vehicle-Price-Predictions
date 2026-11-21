@@ -9,20 +9,20 @@ Jerry John Doviavu, Vaibhav Sharma, Ceilidh Torrance
 
 ## Summary
 
-We investigated whether manufacturing year and odometer reading could be used to build a regression model to predict the sale price of used vehicles sold at auction. Using a sample of 5,000 vehicle sales records, we developed a linear regression model and evaluated its predictive performance using mean absolute error (MAE) and the coefficient of determination (R²). The model achieved a test MAE of $5,319.82 USD and a test R² of approximately 0.4, while reducing cross-validation MAE by 26.3% compared to a median price baseline. These findings suggest that manufacturing year and odometer readings provide useful information about auction prices, although they do not explain all th evariation in vehicle selling prices. Future work could investigate additional predictors to improve accuracy. 
+We investigated whether manufacturing year and odometer reading could be used to build a regression model to predict the selling price of used vehicles sold at auction. Using a sample of 5,000 vehicle sales records, we developed a linear regression model and evaluated its predictive performance using mean absolute error (MAE) and the coefficient of determination (R²). The model achieved a test MAE of 5,319.82 USD and a test R² of approximately 0.4, while reducing cross-validation MAE by 26.3% compared to a median price baseline. These findings suggest that manufacturing year and odometer readings provide useful information about auction prices, although they do not explain all of the variation in vehicle selling prices. Future work could investigate additional predictors to improve accuracy. 
 
 ## Introduction
 
-Used car pricing is much more variable than that of a standard product as feature variation and vehicle depreciation over time both play a role in pricing (Caglayan Akay, E., Bolukbasi, Ö. F., & Bekar, E., 2018). This is why two car models that appear similar may have significantly different prices that depend on factors such as manufacting year, mileage, make, and model. Dealerships need to be able to price cars competitively to compete in the current market, without sacrificing profits. To bid on and resell a car competitively, a dealership needs an understanding of what features are driving auction prices, what options are competitive, and what buyers are willing to pay. 
+Used car pricing is much more variable than that of a standard product as feature variation and vehicle depreciation over time both play a role in pricing (Caglayan Akay, E., Bolukbasi, Ö. F., & Bekar, E., 2018). This is why two car models that appear similar may have significantly different prices that depend on factors such as manufacturing year, mileage, make, and model. Dealerships need to be able to price cars competitively to compete in the current market, without sacrificing profits. To bid on and resell a car competitively, a dealership needs an understanding of what features are driving auction prices, what options are competitive, and what buyers are willing to pay. 
 
-Here we ask how accurately machine learning can predict the auction price of a used car using manufacting year and mileage.  By answering this question, we can support dealerships in making informed decisions related to bidding on cars in a way that allows them to balance profits with consumer interest. Dealerships that consistently overbid on cars are at risk of losing profits that could keep them afloat, while dealerships that consistently underbid can fail to acquire inventory and risk losing business. Bidding that reflects trends and remains competitive in the current market can potentially increase turnover and profitability (Huang, G., Luo, H., & Xia, J., 2019).
+Here we ask how accurately machine learning can predict the auction price of a used car using manufacturing year and mileage.  By answering this question, we can support dealerships in making informed decisions related to bidding on cars in wholesale auctions which are a large, important source of dealer inventory (Larsen, 2021). It can be reasoned that dealerships that consistently overbid on cars are at risk of losing profits that could keep them afloat, while dealerships that consistently underbid can fail to acquire inventory and risk losing business. Informed bidding that reflects trends and remains competitive in the current market can potentially increase turnover and profitability, and information availability has been shown to shape bidding behavior and outcomes in wholesale auto auctions (Tadelis & Zettelmeyer, 2015).
 
-To answer this question we use the dataset *Vehicle Sales Data* (Anwar, n.d.), a dataset of wholesale used vehicles sales sold at auction, including a Manheim Market Report (MMR) benchmark value. A 5,000 row sample from this dataset will be used for training and testing in order to reduce computational overhead during the analysis. Each example in the training and testing set represents one recorded vehicle sale with its associated features such as manufacturing year and odometer reading, as well as the sale price. The target we want to predict is the sale price of the car measured in US dollars (USD). 
+To answer this question we use the dataset *Vehicle Sales Data* (Anwar, n.d.), a dataset of wholesale used vehicles sales sold at auction, including a Manheim Market Report (MMR) benchmark value. A 5,000 row sample from this dataset will be used for training and testing in order to reduce computational overhead during the analysis. Each example in the training and testing set represents one recorded vehicle sale with its associated features such as manufacturing year and odometer reading, as well as the selling price. The target we want to predict is the selling price of the car measured in US dollars (USD). 
 
 ## Methods
 
 ### Data
-The dataset used for this project is the *Vehicle Sales Data* created by Syed Anwar (Anwar, n.d.) and sourced from Kaggle. Each row in the dataset represents a used car that was sold and describes the car by fifteen features: manufacturing year, make, model, trim, body, transmission, vehicle identification number (VIN), state, condition, odometer reading, exterior color, interior color, seller, Manheim Market Report, and sales date. An additional target column representing the sale price of the car is also included. 
+The dataset used for this project is the *Vehicle Sales Data* created by Syed Anwar (Anwar, n.d.) and sourced from Kaggle. Each row in the dataset represents a used car that was sold and describes the car by fifteen features: manufacturing year, make, model, trim, body, transmission, vehicle identification number (VIN), state, condition, odometer reading, exterior color, interior color, seller, Manheim Market Report, and sales date. An additional target column representing the selling price of the car is also included. 
 
 The data is downloaded and loaded with the code below. 
 
@@ -60,11 +60,11 @@ else:
 ```
 
 ### Modeling Decisions
-A linear regression model was built to evaluate whether a model could be used to predict the sale price of a used car. Linear regression provides a straightforward, interpretable starting model which can be used to predict sales price as well as understand which features are adding to or detracting from the price. We chose linear regression for its interpretability, while acknowledging that vehicle characteristics may not relate linearly to selling price.
+A linear regression model was built to evaluate whether a model could be used to predict the selling price of a used car. Linear regression provides a straightforward, interpretable starting model which can be used to predict selling price as well as understand which features are adding to or detracting from the price. We chose linear regression for its interpretability, while acknowledging that vehicle characteristics may not relate linearly to selling price.
 
 In order to reduce computational overhead while analyzing the data and building a model, some additional reduction was done on the data. First, a sample of 5,000 rows was made. This was a practical choice to keep the initial milestone analysis manageable and quick to rerun during development and review. A sampling seed of 522 was set for repeatability, then an 80-20 testing and training split was made to produce 4,000 training examples and 1,000 testing examples. 
 
-Initial modeling was also simplified by selecting just two of the features to represent the examples: manufacturing year and odometer. These two numeric features were selected as they capture the age and wear of the car and can both plausibly relate to resale price. Both features are being treated as numeric as the magnitute of their values are related to sales price as older cars or cars with higher milage tend to have lower sales prices. We did not establish that these are the best predictors or that additional predictors could not have made a more accurate or robust model. Make, model, condition, and other features may provide additional information useful for predicting sales price and could be explored further in a future study. 
+Initial modeling was also simplified by selecting just two of the features to represent the examples: manufacturing year and odometer. These two numeric features were selected as they capture the age and wear of the car and can both plausibly relate to resale price. Both features are being treated as numeric as the magnitude of their values are related to selling price as older cars or cars with higher mileage tend to have lower selling prices. We did not establish that these are the best predictors or that additional predictors could not have made a more accurate or robust model. Make, model, condition, and other features may provide additional information useful for predicting selling price and could be explored further in a future study. 
 
 #### Load the data
 ```{python}
@@ -83,7 +83,7 @@ print("Sample rows and columns:", cars_sample.shape)
 ```
 
 ### Exploratory Data Analysis
-As seen below, exploratory data analysis was performed to evaluate the available features, explore relationships, and find pre-processing requirements. As the original dataset does include some duplicate VINs, a check was done to ensure that there are no vehicles that appear in both the training and testing set. Upon inspection, it was noted that there were some null values in the features targeted for modeling, specifically, two null odometer readings in the test set. These null values were filled using median imputation as part of preprocssing. As seen in the exploratory data analysis below, the odometer readings are right skewed so median imputation handles this when filling the values without adding additional complications. 
+As seen below, exploratory data analysis was performed to evaluate the available features, explore relationships, and find pre-processing requirements. As the original dataset does include some duplicate VINs, a check was done to ensure that there are no vehicles that appear in both the training and testing set. Upon inspection, it was noted that there were some null values in the features targeted for modeling, specifically, two null odometer readings in the training set. These null values were filled using median imputation as part of preprocessing. As seen in Figure 2 below, the odometer readings have large outliers so median imputation handles this when filling the values without adding additional complications. 
 
 #### Separate training and test data
 ```{python}
@@ -122,6 +122,7 @@ print(train_df[model_columns].isna().sum())
 
 #### Summarise the training values
 ```{python}
+#| tbl-cap: "Table 1. Summary statistics of the numeric features in the training dataset (n = 4,000 vehicles). The odometer feature has two missing values."
 train_df[model_columns].describe()
 ```
 
@@ -172,6 +173,7 @@ plt.show()
 
 Selling prices are right-skewed (Figure 1). Price falls quickly as the odometer reading rises and then levels off, so the relationship is curved (Figure 2). Median price generally rises with model year and varies much more for newer cars (Figure 3). Fifteen training cars have an odometer reading below 100 miles, which looks unusual for used cars. The curved pattern suggests that a straight-line model will not fit these data perfectly.
 
+#### Define predictors and target
 ```{python}
 features = ["year", "odometer"]
 target = "sellingprice"
@@ -210,6 +212,7 @@ linear_model.fit(X_train, y_train)
 
 #### Evaluate the model using cross-validation
 ```{python}
+#| tbl-cap: "Table 2. Cross-validation performance of the regression model across five folds. MAE is reported in USD."
 from sklearn.model_selection import cross_validate
 
 cv_results = cross_validate(
@@ -224,7 +227,7 @@ cv_results = cross_validate(
 )
 
 cv_summary = pd.DataFrame({
-    "MAE": -cv_results["test_mae"],
+    "MAE (USD)": -cv_results["test_mae"],
     "R_squared": cv_results["test_r2"]
 })
 
@@ -236,6 +239,7 @@ cv_summary
 
 #### Summarise cross-validation performance
 ```{python}
+#| tbl-cap: "Table 3. Summary of cross-validation performance (mean and standard deviation across five folds)."
 cv_summary_stats = cv_summary.agg(["mean", "std"]).round(2)
 cv_summary_stats
 ```
@@ -245,10 +249,11 @@ Five-fold cross-validation was used to validate the model during model developme
 
 Using vehicle year and odometer readings, the linear regression model achieved a mean cross-validation MAE of approximately 5,230 USD and a mean R² of 0.415. These results indicate that the model captures some variation in selling prices, but substantial prediction error remains. Performance was relatively consistent across the five folds.
 
-The final model was evaluated on the held-out test set using MAE and R² evaluation metrics for direct comparison with the results of the cross-validation testing. MAE expresses average absolute prediction error in the same units as selling price which makes it easy to interpret for our purposes. R² tells us what perenage of the variation in used vehicle sale price the chosen features account for. To validate the output and understand model performance, we also compared against a median-price baseline using the same five cross validation folds. The median-price baseline was chosen as a simple benchmark to determine whether using manufacturing year and odometer reading improves predicted price. 
+The final model was evaluated on the held-out test set using MAE and R² evaluation metrics for direct comparison with the results of the cross-validation testing. MAE expresses average absolute prediction error in the same units as selling price which makes it easy to interpret for our purposes. R² tells us what percentage of the variation in used vehicle selling price the chosen features account for. To validate the output and understand model performance, we also compared against a median-price baseline using the same five cross validation folds. The median-price baseline was chosen as a simple benchmark to determine whether using manufacturing year and odometer reading improves predicted price. 
 
 #### Compare with a baseline model
 ```{python}
+#| tbl-cap: "Table 4. Comparison of mean cross-validation performance between the median baseline and the linear regression model. MAE is reported in USD."
 from sklearn.dummy import DummyRegressor
 
 baseline_model = DummyRegressor(strategy="median")
@@ -266,9 +271,9 @@ baseline_cv_results = cross_validate(
 
 model_comparison = pd.DataFrame({
     "Model": ["Median baseline", "Linear regression"],
-    "Mean CV MAE": [
+    "Mean CV MAE (USD)": [
         -baseline_cv_results["test_mae"].mean(),
-        cv_summary["MAE"].mean()
+        cv_summary["MAE (USD)"].mean()
     ],
     "Mean CV R_squared": [
         baseline_cv_results["test_r2"].mean(),
@@ -283,6 +288,7 @@ The linear regression model outperformed the median baseline, reducing mean cros
 
 #### Evaluate on the held-out test set
 ```{python}
+#| tbl-cap: "Table 5. Test set performance of the linear regression model (n = 999). One test observation with a missing selling price was excluded."
 from sklearn.metrics import mean_absolute_error, r2_score
 
 # Identify test rows with known selling prices
@@ -303,7 +309,7 @@ linear_model.fit(X_train, y_train)
 test_predictions = linear_model.predict(X_test)
 
 test_results = pd.DataFrame({
-    "MAE": [mean_absolute_error(y_test, test_predictions)],
+    "MAE (USD)": [mean_absolute_error(y_test, test_predictions)],
     "R_squared": [r2_score(y_test, test_predictions)]
 }, index=["Linear regression"])
 
@@ -318,6 +324,7 @@ When the linear regression model was evaluated on the held-out test set it achie
 
 #### Compare predicted and actual selling prices
 ```{python}
+#| fig-cap: "Figure 4. Predicted versus actual vehicle selling prices in the test dataset. The red dashed line represents perfect predictions, where predicted prices equal actual prices. Points further from this line indicate larger prediction errors. The model tends to overestimate lower-priced vehicles and underestimate higher-priced vehicles, suggesting that predictions are concentrated within a narrower price range than the actual selling prices."
 import matplotlib.pyplot as plt
 
 fig, ax = plt.subplots(figsize=(7, 5))
@@ -340,8 +347,8 @@ ax.plot(
     label="Perfect predictions"
 )
 
-ax.set_xlabel("Actual selling price")
-ax.set_ylabel("Predicted selling price")
+ax.set_xlabel("Actual selling price (USD)")
+ax.set_ylabel("Predicted selling price (USD)")
 ax.set_title("Predicted versus actual vehicle selling prices")
 ax.legend()
 
@@ -356,22 +363,24 @@ The model tends to overestimate some lower-priced vehicles and underestimate hig
 This analysis used a reproducible sample of 5,000 records and only two predictors: vehicle year and odometer readings. Other available characteristics, such as make, model, and condition, may provide additional predictive information. The linear model also assumes additive linear relationships and can produce unrealistic negative prices. Test evaluation excluded observations with missing selling prices, so the reported performance applies to vehicles with recorded prices.
 
 ## Discussion
-Linear regression using vehicle manufacturing year and odometer readings achieved a test MAE of approximately $5,319.82 USD. This means that, on average, the models predicted sale prices are off by over $5,000 USD from the actual sales prices. Based on Figure 1 our distribution of selling prices is right skewed, with more than half of the cars in the sample sold for under $20,000 USD. Considering this, an MAE of over $5,300 is quite large. However, the median baseline had a mean MAE of about $7092.95 USD in CV testing so this is still an improvement. 
+Linear regression using vehicle manufacturing year and odometer readings achieved a test MAE of approximately 5,319.82 USD. This means that, on average, the models predicted selling prices are off by over 5,000 USD from the actual selling prices. Based on Figure 1 our distribution of selling prices is right skewed, with more than half of the cars in the sample sold for under 20,000 USD. Considering this, an MAE of over 5,300 USD is quite large. However, the median baseline had a mean MAE of about 7092.95 USD in CV testing so this is still an improvement. 
 
-The test R² was approximately 0.40, meaning the model explains around 40% of the variation in selling prices in the test data. This is a good start but still does not account for about 60% of the variation in the sales prices. Adding additional features or using more flexible models, such as tree-based ensembles or neural networks, could help to close this gap, as previous studies of used car prices have found that these approaches outperform linear regression (Lin, 2024; Wei, n.d.). Using a non-linear model is also supported by our exploratory data analysis which found a curved relationship between odometer readings and sales prices, which might account for some of the prediction error when using a linear model. Further, we can see that the results of the cross-validation performance was similar to the test performance. This suggests that the predictive validation estimates were reasonably consistent. 
+The test R² was approximately 0.40, meaning the model explains around 40% of the variation in selling prices in the test data. This is a good start but still does not account for about 60% of the variation in the selling prices. Adding additional features or using more flexible models, such as tree-based ensembles or neural networks, could help to close this gap, as previous studies of used car prices have found that these approaches outperform linear regression (Lin, 2025; Wei, 2026). Using a non-linear model is also supported by our exploratory data analysis which found a curved relationship between odometer readings and selling prices, which might account for some of the prediction error when using a linear model. Further, we can see that the results of the cross-validation performance was similar to the test performance. This suggests that the predictive validation estimates were reasonably consistent. 
 
 The model improved on the median baseline, reducing cross validation MAE by approximately 26.3%. However, that does not mean that our model is useful in practice. What these tests ultimately show us is that while our model is better than the baseline, there are still improvements that could be made that would allow for more accurate, robust predictions.  
 
 ## Conclusion
 Vehicle manufacturing year and odometer readings provided useful information for predicting selling prices. Linear regression reduced cross-validation MAE by approximately 26.3% compared with a median baseline. On the held-out test set, the model achieved an MAE of 5,319.82 USD and an R² of approximately 0.40. However, substantial errors remained, particularly for higher-priced vehicles, limiting its usefulness for precise individual valuations.
 
-## Sources
+## References
 Anwar, S. (n.d.). Vehicle sales data [Data set]. Kaggle. https://www.kaggle.com/datasets/syedanwarafridi/vehicle-sales-data 
 
 Caglayan Akay, E., Bolukbasi, Ö. F., & Bekar, E. (2018). Robust and resistant estimations of hedonic prices for second hand cars: An application to the Istanbul car market. International Journal of Economics and Financial Issues, 8(1), 39–47. https://econjournals.com/index.php/ijefi/article/view/5734 
 
-Huang, G., Luo, H., & Xia, J. (2019). Invest in information or wing it? A model of dynamic pricing with seller learning. Management Science, 65(12), 5556–5583. https://doi.org/10.1287/mnsc.2018.3197
+Larsen, B. J. (2021). The efficiency of real-world bargaining: Evidence from wholesale used-auto auctions. The Review of Economic Studies, 88(2), 851-882. https://ideas.repec.org/a/oup/restud/v88y2021i2p851-882..html
 
 Lin, J. (2025). Predicting used car price based on machine learning. In *Proceedings of the 1st International Conference on E-commerce and Artificial Intelligence (ECAI 2024)* (pp. 553-560). SCITEPRESS. https://doi.org/10.5220/0013270500004568
+
+Tadelis, S., & Zettelmeyer, F. (2015). Information disclosure as a matching mechanism: Theory and evidence from a field experiment. American Economic Review, 105(2), 886-905. https://doi.org/10.1257/aer.20110753
 
 Wei, M. (2026). Used car price prediction based on machine learning algorithms. In L. C. Yoong (Ed.), *Proceedings of the 2026 2nd International Conference on Financial Innovation and Marketing Management (FIMM 2026)* (Advances in Economics, Business and Management Research, Vol. 408, pp. 1348-1355). Atlantis Press. https://doi.org/10.2991/978-94-6239-801-6_140
