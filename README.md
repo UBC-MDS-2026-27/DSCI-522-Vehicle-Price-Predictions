@@ -1,60 +1,107 @@
-# DSCI-522-Group-17-Repository
+# Predicting Vehicle Selling Prices
 
-## Python environment setup
+Authors: Jerry John Doviavu, Vaibhav Sharma, and Ceilidh Torrance.
+
+## Project summary
+
+How well can vehicle year and odometer readings predict selling prices? Using a reproducible sample of 5,000 records from the Vehicle Sales Data dataset, we compared linear regression with a baseline that predicts the median training price. Linear regression reduced mean cross-validation mean absolute error (MAE) by approximately 26.3%, from 7,092.95 to 5,229.50. On the held-out test set, MAE was 5,319.82 and R² was approximately 0.40.
+
+Vehicle year and odometer readings provide useful predictive information, but substantial errors remain. The model underestimates expensive vehicles and produces some unrealistic negative predictions, limiting its usefulness for precise individual valuations. Test performance was evaluated only for vehicles with recorded selling prices.
+
+## Report
+
+[Read the published analysis report](https://ubc-mds-2026-27.github.io/DSCI-522-Vehicle-Price-Predictions/analysis/vehicle-price-prediction.html).
+
+The [Quarto source](analysis/vehicle-price-prediction.qmd) and [rendered HTML](analysis/vehicle-price-prediction.html) are included in this repository. To reproduce the report locally, follow the instructions below.
+
+## Data
+
+The analysis uses [Vehicle Sales Data on Kaggle](https://www.kaggle.com/datasets/syedanwarafridi/vehicle-sales-data), specifically `car_prices.csv`.
+
+The report downloads the CSV into `data/raw/` when it is missing and reuses it when it already exists. It selects 5,000 records using random seed 522 and splits them into 4,000 training observations and 1,000 test observations before exploratory analysis or learned preprocessing. The splits are saved in `data/processed/`.
+
+The predictors are vehicle year and odometer reading, and the target is selling price. Missing predictor values are handled with median imputation inside the modelling pipeline. Imputation values are learned only from the relevant training data, including within each cross-validation fold.
+
+## How to run the analysis
 
 ### Prerequisites
 
-Install Git, uv, and Quarto:
+Install [Git](https://git-scm.com/downloads), [uv](https://docs.astral.sh/uv/getting-started/installation/), and [Quarto](https://quarto.org/docs/get-started/)
 
-- Git: https://git-scm.com/downloads
-- uv: https://docs.astral.sh/uv/getting-started/installation/
-- Quarto: https://quarto.org/docs/get-started/
+The project uses Python 3.12. Python dependencies are declared in [pyproject.toml](pyproject.toml), and resolved package versions are recorded in [uv.lock](uv.lock). The Python version request is recorded in `.python-version`.
 
-### Create the environment
+### Clone the repository
 
-Clone the repository and enter its folder:
+Run these commands in your terminal:
 
 ```bash
-git clone https://github.com/UBC-MDS-2026-27/DSCI-522-Group-17-Repository.git
-cd DSCI-522-Group-17-Repository
+git clone https://github.com/UBC-MDS-2026-27/DSCI-522-Vehicle-Price-Predictions.git
+cd DSCI-522-Vehicle-Price-Predictions
 ```
 
-Recreate the Python environment using the committed lockfile:
+Run all remaining commands from this repository folder.
+
+### Recreate the environment
 
 ```bash
 uv sync --locked
 ```
 
-The project uses Python 3.12. uv creates a local `.venv` directory and installs the recorded dependencies.
+This creates a local `.venv` and installs the dependencies recorded in the lockfile. The virtual environment is not committed to Git.
 
-### Verify the environment
+The direct Python dependencies are pandas, scikit-learn, matplotlib, Jupyter, and kagglehub.
 
-Run:
-
-```bash
-uv run python -c "import pandas, sklearn, matplotlib, jupyter; print('All four packages imported successfully')"
-```
-
-Check that Quarto is installed:
+### Verify the dependencies
 
 ```bash
+uv run python -c "import pandas, sklearn, matplotlib, jupyter, kagglehub; print('All five packages imported successfully')"
 quarto --version
 ```
 
-Use `uv run` to run Python commands in the project environment; manual activation is not required.
+Git, uv, and the Quarto executable are installed separately from the project's Python dependencies.
 
-### Render a Quarto report
-
-From the repository root, use this command, replacing the example path with the actual report's path:
+### Render the report
 
 ```bash
-uv run quarto render analysis/your-report-name.qmd
+uv run quarto render analysis/vehicle-price-prediction.qmd
 ```
 
-The analysis report has not been added yet, so this example path is a placeholder.
+This executes the analysis and creates `analysis/vehicle-price-prediction.html` and its supporting assets. Open the HTML file in a browser to read the report.
 
-### Environment verification status
+Use `uv run` to execute commands in the project environment; manual activation is not required. Internet access is needed when the raw CSV must be downloaded.
 
-The environment was tested on macOS using Python 3.12.14 and Quarto 1.10.18. A temporary Quarto document successfully imported the analysis packages, executed Python from the project's `.venv`, and rendered an HTML page containing a plot.
+### Verification status
 
-Windows verification and rendering of the final analysis report are pending.
+The analysis has rendered successfully on macOS. A teammate independently rendered the modelling report and reproduced the reported cross-validation and held-out test scores. Windows verification has not yet been documented.
+
+## Project organisation
+
+| Location | Purpose |
+|---|---|
+| `analysis/vehicle-price-prediction.qmd` | Analysis code and narrative |
+| `analysis/vehicle-price-prediction.html` | Rendered report |
+| `analysis/vehicle-price-prediction_files/` | Supporting report assets |
+| `data/raw/` | Original downloaded data |
+| `data/processed/` | Saved training and test splits |
+| `pyproject.toml` | Python requirements and direct dependencies |
+| `uv.lock` | Resolved dependency versions |
+| `.python-version` | Python version request |
+| `CODE_OF_CONDUCT.md` | Community participation expectations |
+
+## Licenses
+
+Licensing documentation is under review in PR #16. The proposed licenses are MIT for the software code and Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) for the report. This section will be updated to match the approved `LICENSE.md`.
+
+The source dataset has its own licensing terms, separate from the licenses for our code and report.
+
+## AI use statement
+
+Jerry used ChatGPT to assist with Python environment setup, Git and GitHub command explanations, analysis code, debugging, interpretation of model results, and drafting documentation and review feedback. Generated suggestions were checked through local execution and teammate review where applicable. Team members performed the GitHub issue, pull request, review, and merge actions themselves.
+
+Example prompts included:
+
+- “Before fitting it, what are some other ways of replacing the missing values?”
+- “Is this not a case of data leakage?”
+- “There's going to be an oral check-in to explain the process and the code, so I understand what we are doing.”
+
+Other team members should add their own AI-use disclosures, if applicable, before submission.
