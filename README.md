@@ -22,6 +22,14 @@ The report downloads the CSV into `data/raw/` when it is missing and reuses it w
 
 The predictors are vehicle year and odometer reading, and the target is selling price. Missing predictor values are handled with median imputation inside the modelling pipeline. Imputation values are learned only from the relevant training data, including within each cross-validation fold.
 
+## Dependencies
+
+The analysis was developed and tested on macOS using Python 3.12, uv 0.12.5, and Quarto 1.10.18. Git is also required to clone the repository.
+
+The direct Python dependencies are pandas, scikit-learn, matplotlib, Jupyter, and kagglehub. Dependency requirements are declared in [pyproject.toml](pyproject.toml), and resolved versions are recorded in [uv.lock](uv.lock). Run `uv sync --locked` to recreate the Python environment.
+
+Git, uv, and Quarto must be installed separately.
+
 ## How to run the analysis
 
 ### Prerequisites
@@ -70,9 +78,6 @@ This executes the analysis and creates `analysis/vehicle-price-prediction.html` 
 
 Use `uv run` to execute commands in the project environment; manual activation is not required. Internet access is needed when the raw CSV must be downloaded.
 
-### Verification status
-
-The analysis has rendered successfully on macOS. A teammate independently rendered the modelling report and reproduced the reported cross-validation and held-out test scores. Windows verification has not yet been documented.
 
 ## Project organisation
 
@@ -92,7 +97,7 @@ The analysis has rendered successfully on macOS. A teammate independently render
 
 Licensing documentation is under review in PR #16. The proposed licenses are MIT for the software code and Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) for the report. This section will be updated to match the approved `LICENSE.md`.
 
-The source dataset has its own licensing terms, separate from the licenses for our code and report.
+The Vehicle Sales Data dataset is listed on [Kaggle](https://www.kaggle.com/datasets/syedanwarafridi/vehicle-sales-data) under the MIT License. Its licensing is separate from the licenses applied to this project's code and report.
 
 ## AI use statement
 
@@ -105,3 +110,7 @@ Example prompts included:
 - “There's going to be an oral check-in to explain the process and the code, so I understand what we are doing.”
 
 Other team members should add their own AI-use disclosures, if applicable, before submission.
+
+## References
+
+syedanwarafridi. (n.d.). *Vehicle Sales Data* [Dataset]. Kaggle. https://www.kaggle.com/datasets/syedanwarafridi/vehicle-sales-data. Accessed November 21, 2026.
