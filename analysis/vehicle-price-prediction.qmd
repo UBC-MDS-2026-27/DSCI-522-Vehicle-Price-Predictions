@@ -1,6 +1,8 @@
 ---
 title: "Predicting Vehicle Selling Prices"
-format: html
+format:
+  html:
+    embed-resources: true
 jupyter: python3
 execute:
   echo: true
